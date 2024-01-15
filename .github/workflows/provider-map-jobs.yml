@@ -97,12 +97,6 @@ jobs:
           with open(geojson_file, 'w') as f:
             json.dump(geojson, f, indent=2)
 
-      - name: Setup yq
-        uses: vegardit/gha-setup-yq@v1
-        with:
-          use-cache: true
-          version: 4.40.5
-
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
