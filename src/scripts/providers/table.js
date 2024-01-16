@@ -9,7 +9,7 @@ $(function () {
           title: dict.label,
           headerTooltip: dict.definition,
           field: dict.column,
-        }
+        },
       );
 
     const textCol = (dict) =>
@@ -60,9 +60,7 @@ $(function () {
         case "money":
           return moneyCol(dict);
         case "url":
-          return dict.column === "url"
-            ? urlCol(dict, provider.label, provider.column)
-            : urlCol(dict);
+          return dict.column === "url" ? urlCol(dict, provider.label, provider.column) : urlCol(dict);
         default:
           console.log(`Unknown column type: ${dict}`);
       }
