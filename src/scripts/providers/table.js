@@ -1,96 +1,88 @@
-$(function () {
+$(function() {
   let table;
 
   const buildDataTable = (data, dictionary) => {
-    const col = (dict) =>
-      Object.assign(
-        {},
-        {
-          title: dict.label,
-          headerTooltip: dict.definition,
-          field: dict.column,
-        }
-      );
+    const col = (dict) => Object.assign({}, {
+      title : dict.label,
+      headerTooltip : dict.definition,
+      field : dict.column,
+    });
 
-    const textCol = (dict) =>
-      Object.assign({}, col(dict), {
-        formatter: "textarea",
-      });
+    const textCol = (dict) => Object.assign({}, col(dict), {
+      formatter : "textarea",
+    });
 
-    const numCol = (dict) =>
-      Object.assign({}, col(dict), {
-        sorter: "number",
-        sorterParams: {
-          alignEmptyValues: "bottom",
-        },
-        formatter: "money",
-        formatterParams: {
-          precision: false,
-        },
-      });
+    const numCol = (dict) => Object.assign({}, col(dict), {
+      sorter : "number",
+      sorterParams : {
+        alignEmptyValues : "bottom",
+      },
+      formatter : "money",
+      formatterParams : {
+        precision : false,
+      },
+    });
 
-    const moneyCol = (dict) =>
-      Object.assign({}, numCol(dict), {
-        formatterParams: {
-          symbol: "$",
-        },
-      });
+    const moneyCol = (dict) => Object.assign({}, numCol(dict), {
+      formatterParams : {
+        symbol : "$",
+      },
+    });
 
-    const urlCol = (dict, label, textKey) =>
-      Object.assign({}, col(dict), {
-        formatter: "link",
-        title: label || dict.label,
-        formatterParams: {
-          labelField: textKey || dict.column,
-          target: "_blank",
-        },
-      });
+    const urlCol = (dict, label, textKey) => Object.assign({}, col(dict), {
+      formatter : "link",
+      title : label || dict.label,
+      formatterParams : {
+        labelField : textKey || dict.column,
+        target : "_blank",
+      },
+    });
 
     const provider = dictionary.find((dict) => dict.column === "provider");
     const cols = dictionary.map((dict) => {
       switch (dict.type) {
-        case "bool":
-        case "string":
-        case "text":
-          return textCol(dict);
-        case "float64":
-        case "integer":
-        case "int64":
-          return numCol(dict);
-        case "money":
-          return moneyCol(dict);
-        case "url":
-          return dict.column === "url"
-            ? urlCol(dict, provider.label, provider.column)
-            : urlCol(dict);
-        default:
-          console.log(`Unknown column type: ${dict}`);
+      case "bool":
+      case "string":
+      case "text":
+        return textCol(dict);
+      case "float64":
+      case "integer":
+      case "int64":
+        return numCol(dict);
+      case "money":
+        return moneyCol(dict);
+      case "url":
+        return dict.column === "url"
+                   ? urlCol(dict, provider.label, provider.column)
+                   : urlCol(dict);
+      default:
+        console.log(`Unknown column type: ${dict}`);
       }
     });
 
     // create the tabulator data table
     table = new Tabulator(`#${data_table.data_id}`, {
-      layout: "fitData",
-      data: data,
-      columns: cols,
-      headerSortElement: "<i></i>",
-      height: "560px",
-      pagination: false,
-      selectable: false,
+      layout : "fitData",
+      data : data,
+      columns : cols,
+      headerSortElement : "<i></i>",
+      height : "560px",
+      pagination : false,
+      selectable : false,
     });
 
-    return [data, dictionary];
+    return [ data, dictionary ];
   };
 
   const buildDictTable = (dictionary) => {
     // create the dict table (don't keep a reference)
     new Tabulator(`#${data_table.dict_id}`, {
-      layout: "fitColumns",
-      data: dictionary,
-      autoColumns: true,
-      headerSort: false,
-      pagination: false,
-      selectable: false,
+      layout : "fitColumns",
+      data : dictionary,
+      autoColumns : true,
+      headerSort : false,
+      pagination : false,
+      selectable : false,
     });
 
     return dictionary;
@@ -107,8 +99,8 @@ $(function () {
 
     // although not intuitive, this sorts by service_county and then provider
     table.setSort([
-      { column: "provider", dir: "asc" },
-      { column: "service_county", dir: "asc" },
+      {column : "provider", dir : "asc"},
+      {column : "service_county", dir : "asc"},
     ]);
   };
 
@@ -147,11 +139,11 @@ $(function () {
 
   document.addEventListener("mapClick", handleCountyClick);
 
-  const dataFiles = [data_table.data_file, data_table.dict_file];
+  const dataFiles = [ data_table.data_file, data_table.dict_file ];
   const jobs = dataFiles.map((dataFile) => $.get(dataFile, (data) => data));
 
   Promise.all(jobs)
-    .then(([data, dictionary]) => buildDataTable(data, dictionary))
-    .then(([_, dictionary]) => buildDictTable(dictionary))
-    .then(() => refresh());
+      .then(([ data, dictionary ]) => buildDataTable(data, dictionary))
+      .then(([ _, dictionary ]) => buildDictTable(dictionary))
+      .then(() => refresh());
 });
